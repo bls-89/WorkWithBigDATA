@@ -1,0 +1,50 @@
+1)создание треклятой директории:
+hadoop fs -mkdir /user/1/ViM
+
+
+2) копирование злополучной книги в HDFS: (она была скопирована в контейнер с помощь docker cp d:/kniga.txt 265c5716bd55:/usr/1) - не знаю правильно это или нет
+
+hadoop fs -put /usr/1/kniga.txt /user/1/ViM/ViM.txt   
+
+3) вывод содержимого бедолажной папки:
+hadoop fs -ls /user/1/ViM
+Ответ:
+Found 1 items
+-rw-r--r--   3 root 1    3086568 2023-12-08 00:12 /user/1/ViM/ViM.txt
+
+4)меняем права
+hadoop fs -chmod 755 /user/1/ViM/ViM.txt
+
+5)опять смотрим на файл:
+hadoop fs -ls /user/1/ViM
+Ответ с новыми правами(чудеса, сработало):
+Found 1 items
+-rwxr-xr-x   3 root 1    3086568 2023-12-08 00:12 /user/1/ViM/ViM.txt
+
+6)Выводим размер файла:
+hadoop fs -du /user/1/ViM/ViM.txt
+ожидаемо из вопроса ничерта не удобно, надо добавить The -h option will format file sizes in a “human-readable” fashion (e.g 64.0m instead of 67108864)
+
+hadoop fs -du -h /user/1/ViM/ViM.txt
+
+Ответ:
+2.9 M  /user/1/ViM/ViM.txt
+второй цифры нет ничерта -фактор репликации отсутствует.
+
+7) меняем фактор репликации на 2
+hadoop fs -setrep 2 /user/1/ViM/ViM.txt
+Ответ:
+Replication 2 set: /user/1/ViM/ViM.txt
+
+
+Опять выводим размер файла:
+hadoop fs -du -h /user/1/ViM/ViM.txt
+
+Ответ теперь:
+2.9 M  /user/1/ViM/ViM.txt
+Такой же. Но фактор репликации теперь 2 - исходя из 7 ответа, как его посмотреть - одному Богу известно.
+
+8)посчтитать количество строк книженции:
+hadoop fs -cat /user/1/ViM/ViM.txt | wc -l
+
+Ответ:13401
